@@ -12,7 +12,7 @@ def generate_dt(model, fixed_number: int, is_negative: bool):
     # Get tree information
     children_left, children_right, feature, threshold, values, is_leaves = data_construction(model)
 
-    # leo context maintain
+    # Noir context maintain
     noir = NoirContext()
 
     fn_name = 'main'
@@ -88,7 +88,8 @@ def generate_body(children_left, children_right, feature, threshold, values, fix
                 control_tree.append(res)
                 return control_tree
             elif method == "xgboost":
-                res = str(math.ceil(values[head] * fixed_number))
+                res = math.ceil(values[head] * fixed_number)
+                res = f"0{res}" if res<0 else str(res)
                 control_tree.append(res)
                 return control_tree
             else:
@@ -103,5 +104,4 @@ def generate_body(children_left, children_right, feature, threshold, values, fix
         return control_tree
 
     body = build_tree(0)
-
     return body
