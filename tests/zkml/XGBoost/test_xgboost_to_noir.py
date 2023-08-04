@@ -18,7 +18,7 @@ class test_xgboost(unittest.TestCase):
         fixed_number, is_negative = quantize(titanic.iloc[0])
         print("fixed_number is", fixed_number)
         # model to noir code
-        model_path = "model/Acute_Inflammations_xgboost_classification.dat"
+        model_path = "model/XGBoost/Acute_Inflammations_xgboost_classification.dat"
         is_classification = "classification" in model_path
         # load xgb model
         clf = joblib.load(model_path)

@@ -122,7 +122,7 @@ def data_construction(clf, is_classification, struct_name):
 def generate_functions_body(n_estimators, n_classes, is_leaves_est, threshold_est, feature_est, children_left_est,
                             children_right_est, values_est, fixed_number, arr_name, context):
     """
-    description: generate functions_body by trees from xgboost lib
+    description: generate functions_body by trees from XGBoost lib
     inputs: origin trees: df[],
     result: [[body,][]] class(body) list in tree list
     """
@@ -137,7 +137,7 @@ def generate_functions_body(n_estimators, n_classes, is_leaves_est, threshold_es
         values_cls = values_est[i]
         sign_function_body = generate_body(children_left_cls, children_right_cls, feature_cls, threshold_cls,
                                            values_cls, fixed_number, is_negative, arr_name, is_leaves_cls,
-                                           method="xgboost")
+                                           method="XGBoost")
         functions_body.append(sign_function_body)
     return functions_body
 
@@ -207,7 +207,7 @@ def xgboost_noir_code(clf, fixed_number: int = 1, is_classification: bool = True
     arr_name = "inputs"
     fn_inputs_name_and_type = {arr_name: f"[{INT32};{clf.n_features_in_}]"}
 
-    # Get xgboost information
+    # Get XGBoost information
     n_estimators, n_classes, is_leaves, threshold, feature, children_left, children_right, values = data_construction(
         clf, is_classification, arr_name)
 

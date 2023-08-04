@@ -87,7 +87,7 @@ def generate_body(children_left, children_right, feature, threshold, values, fix
                 res = str(values[head])
                 control_tree.append(res)
                 return control_tree
-            elif method == "xgboost":
+            elif method == "XGBoost":
                 res = math.ceil(values[head] * fixed_number)
                 res = f"0{res}" if res<0 else str(res)
                 control_tree.append(res)
