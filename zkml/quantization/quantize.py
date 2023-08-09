@@ -1,3 +1,5 @@
+import math
+
 import torch
 
 INT = ["int8", "int16", "int32", "int64"]
@@ -43,7 +45,7 @@ def get_quantize_range(target_type):
     return q_min, q_max
 
 
-def calc_scale(x: list, target_type) -> float:
+def calc_scale(x: list, target_type):
     q_min, q_max = get_quantize_range(target_type)
     # Calculate value range (denominator)
     x_range = get_max(x) - get_min(x)
@@ -55,10 +57,10 @@ def calc_scale(x: list, target_type) -> float:
     return scale_molecule, scale_denominator
 
 
-def calc_zero_point(x: list, scale_molecule, scale_denominator, target_type: str) -> int:
+def calc_zero_point(x: list, scale, target_type: str) -> int:
     q_min, q_max = get_quantize_range(target_type)
     # zero_point = (-scale_molecule / scale_denominator * get_min(x) + q_min).round()
-    zero_point = (-scale_molecule / scale_denominator * get_max(x) + q_max).__round__()
+    zero_point = (-scale * get_max(x) + q_max).__round__()
     return zero_point
 
 
@@ -67,8 +69,7 @@ def quantize(values: list, q_scale, q_zero_point: int, target_type: str):
     q_min, q_max = get_quantize_range(target_type)
     x_quantize = []
     for value in values:
-        x_quantize.append((value * q_scale + q_zero_point).__round__())
-        # x_quantize = torch.clip((values * q_scale + q_zero_point).round(), min=Q_MIN, max=Q_MAX)
+        x_quantize.append((value * math.ceil(q_scale) + q_zero_point).__round__())
     x_quantize = torch.clip(torch.tensor(x_quantize), min=q_min, max=q_max)
 
     return [int(x_ele) for x_ele in x_quantize]
@@ -78,8 +79,7 @@ def quantize_not_clip(values: list, q_scale, q_zero_point: int):
     # detect input arg "target_type" in uint or int list
     x_quantize = []
     for value in values:
-        x_quantize.append((value * q_scale + q_zero_point).__round__())
-        # x_quantize = torch.clip((values * q_scale + q_zero_point).round(), min=Q_MIN, max=Q_MAX)
+        x_quantize.append((value * math.ceil(q_scale) + q_zero_point).__round__())
     x_quantize = torch.tensor(x_quantize)
 
     return [int(x_ele) for x_ele in x_quantize]
@@ -99,29 +99,11 @@ def quantize_all(values: list, target_type: str):
     # detect input arg "target_type" in uint or int list
     q_min, q_max = get_quantize_range(target_type)
     scale_molecule, scale_denominator = calc_scale(values, target_type)
-    q_zero_point = calc_zero_point(values, scale_molecule, scale_denominator, target_type)
+    scale = math.ceil(scale_molecule / scale_denominator)
+    q_zero_point = calc_zero_point(values, scale, target_type)
     x_quantize = []
     for value in values:
-        x_quantize.append((value * scale_molecule / scale_denominator + q_zero_point).__round__())
-        # x_quantize = torch.clip((values * q_scale + q_zero_point).round(), min=Q_MIN, max=Q_MAX)
+        x_quantize.append((value * scale + q_zero_point).__round__())
     x_quantize = torch.clip(torch.tensor(x_quantize), min=q_min, max=q_max)
     x_quantize = [int(x_ele) for x_ele in x_quantize]
-    return x_quantize, scale_molecule, scale_denominator, q_zero_point, get_max(values), get_min(values)
-
-
-if __name__ == '__main__':
-    x = [-3.0, 0.1, 3.2, -3.0, -0.3, 3.2, -2.0, 0.2, 2.0, -1.0, 0.1, 1.0, -3.2, 1.0, 3.0]
-    _type = "uint8"
-    _f_min, _f_max = get_max(x), get_min(x)
-    print(_f_max, _f_min)
-    _scale_molecule, _scale_denominator = calc_scale(x, _type)
-    _zero_point = calc_zero_point(x, _scale_molecule, _scale_denominator, _type)
-    scale = _scale_molecule / _scale_denominator
-    print("scale", scale)
-    print("zero_point", _zero_point)
-    print(quantize(x, scale, _zero_point, _type))
-    print(dequantize(
-        quantize(x, scale, _zero_point, _type),
-        scale,
-        _zero_point,
-        _type))
+    return x_quantize, scale, q_zero_point
