@@ -7,13 +7,20 @@ from transpiler.sub_module.sign import LESS_THAN, LESS_THAN_OR_EQUAL, LEFT_BRACK
 from transpiler.core_module.control_pod import IfElseControl
 from transpiler.utils.utils import table_format_control
 
+from zkml.quantization.quantize import quantize_all, quantize, UINT
 
-def generate_dt(model, fixed_number: int, is_negative: bool):
+
+def generate_dt(model, is_negative, q_scale, q_zero_point, quantize_type):
     # Get tree information
     children_left, children_right, feature, threshold, values, is_leaves = data_construction(model)
-
+    threshold = quantize(threshold, q_scale, q_zero_point, quantize_type)
     # Noir context maintain
     noir = NoirContext()
+    # Add annotation in context
+    noir.add_annotation(0, f"inputs quantization scale reciprocal: {q_scale}")
+    noir.add_annotation(1, f"inputs quantization zero-point: {q_zero_point}")
+    noir.add_annotation(2, f"quantize_type: {quantize_type}")
+
 
     fn_name = 'main'
     array_name = 'inputs'
@@ -25,11 +32,11 @@ def generate_dt(model, fixed_number: int, is_negative: bool):
 
     # fn_inputs_name_and_type = generate_name_and_type(is_negative, model.n_features_in_)
     fn_result = custom_type('u3')
-    body = generate_body(children_left, children_right, feature, threshold, values, fixed_number, is_negative,
+    body = generate_body(children_left, children_right, feature, threshold, values,
                          array_name, is_leaves, 'dt')
     noir.add_function(fn_name, fn_inputs_name_and_type, fn_result, body)
 
-    noir_code_list = noir.generate_noir_code_list(fn_name, fixed_number)
+    noir_code_list = noir.generate_noir_code_list()
 
     return table_format_control(noir_code_list)
 
@@ -77,24 +84,20 @@ def generate_name_and_type(is_negative, feature) -> dict:
     return res
 
 
-def generate_body(children_left, children_right, feature, threshold, values, fixed_number, is_negative,
-                  array_name, is_leaves, method):
+def generate_body(children_left, children_right, feature, threshold, values,
+                  array_name, is_leaves, method, quantize_type=UINT[0]):
+    if method == "XGBoost":
+        values, q_scale, q_zero_point = quantize_all(values, quantize_type)
+
     def build_tree(head):
         control_tree = []
         # build_tree(head)
         if is_leaves[head]:
-            if method == "dt":
-                res = str(values[head])
-                control_tree.append(res)
-                return control_tree
-            elif method == "XGBoost":
-                res = math.ceil(values[head] * fixed_number)
-                res = f"0{res}" if res<0 else str(res)
-                control_tree.append(res)
-                return control_tree
-            else:
-                raise Exception("Unknown model")
-        nodes_threshold = str(math.ceil(threshold[head] * fixed_number))
+            res = str(values[head])
+            control_tree.append(res)
+            return control_tree
+
+        nodes_threshold = threshold[head]
         comp = LESS_THAN if int(threshold[head]) != threshold[head] else LESS_THAN_OR_EQUAL
         left_value = f'{array_name}{LEFT_BRACKET}{feature[head]}{RIGHT_BRACKET}'
         right_value = str(nodes_threshold)
