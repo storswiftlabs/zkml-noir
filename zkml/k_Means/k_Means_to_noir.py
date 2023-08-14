@@ -12,11 +12,8 @@ from transpiler.sub_module.sign import (
     LESS_THAN,
     LEFT_PARENTHESIS,
     RIGHT_PARENTHESIS,
-    ADD,
-    SUB,
     ASSIGNMENT,
     COMMA,
-    MULTI
 )
 from transpiler.utils.utils import table_format_control
 
@@ -57,7 +54,7 @@ def generate_k_means_noir_code(centers, scale, zero_point, display_type, noir_na
 
     x = 'x'
     let_x = Let(x, FIELD,
-                f"{mod_name}::{SUB}{LEFT_PARENTHESIS}"
+                f"{mod_name}::sub{LEFT_PARENTHESIS}"
                     f"{point}{LEFT_BRACKET}{index}{RIGHT_BRACKET}{COMMA} "
                     f"{point_zero_point}{COMMA} {point_scale}{COMMA} "
                     f"{inputs}{LEFT_BRACKET}{index}{RIGHT_BRACKET}{COMMA} "
@@ -67,14 +64,14 @@ def generate_k_means_noir_code(centers, scale, zero_point, display_type, noir_na
                 False).get()
     x_double = 'x_double'
     let_x_double = Let(x_double, FIELD,
-                       f"{mod_name}::{MULTI}{LEFT_PARENTHESIS}"
+                       f"{mod_name}::mul{LEFT_PARENTHESIS}"
                            f"{x}{COMMA} {point_zero_point}{COMMA} {point_scale}{COMMA} "
                            f"{x}{COMMA} {point_zero_point}{COMMA} {point_scale}{COMMA} "
                            f"{point_zero_point}{COMMA} {point_scale}"
                        f"{RIGHT_PARENTHESIS}",
                        False).get()
 
-    obtainEuclideanDistance_body = [let_x, let_x_double, f"{sum} {ASSIGNMENT} {mod_name}::{ADD}{LEFT_PARENTHESIS}"
+    obtainEuclideanDistance_body = [let_x, let_x_double, f"{sum} {ASSIGNMENT} {mod_name}::sub{LEFT_PARENTHESIS}"
                                                          f"{sum}{COMMA} {point_zero_point}{COMMA} {point_scale}{COMMA} "
                                                          f"{x_double}{COMMA} {point_zero_point}{COMMA} "
                                                          f"{point_scale}{COMMA} "
