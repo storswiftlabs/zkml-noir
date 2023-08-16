@@ -33,7 +33,7 @@ def generate_dt(model, is_negative, q_scale, q_zero_point, quantize_type):
     # fn_inputs_name_and_type = generate_name_and_type(is_negative, model.n_features_in_)
     fn_result = custom_type('u3')
     body = generate_body(children_left, children_right, feature, threshold, values,
-                         array_name, is_leaves, 'dt')
+                         array_name, is_leaves)
     noir.add_function(fn_name, fn_inputs_name_and_type, fn_result, body)
 
     noir_code_list = noir.generate_noir_code_list()
@@ -85,9 +85,7 @@ def generate_name_and_type(is_negative, feature) -> dict:
 
 
 def generate_body(children_left, children_right, feature, threshold, values,
-                  array_name, is_leaves, method, quantize_type=UINT[0]):
-    if method == "XGBoost":
-        values, q_scale, q_zero_point = quantize_all(values, quantize_type)
+                  array_name, is_leaves):
 
     def build_tree(head):
         control_tree = []

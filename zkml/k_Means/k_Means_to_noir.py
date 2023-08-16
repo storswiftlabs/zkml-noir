@@ -122,7 +122,7 @@ def generate_k_means_noir_code(centers, scale, zero_point, display_type, noir_na
     body.append(f"{check_min}{LEFT_PARENTHESIS}{'e0,e1,e2,e3'}{RIGHT_PARENTHESIS}")
     context.add_function(main, fn_inputs_type_and_name, u3, body)
 
-    data_arr = context.generate_noir_code_list(noir_name, 1)
+    data_arr = context.generate_noir_code_list()
     return table_format_control(data_arr)
 
 
