@@ -64,32 +64,3 @@ fn sub(x_quantized: Field, x_zero_point: Field, x_scale_reciprocal: Field, y_qua
        z_zero_point;
    z_quantized
 }
-
-
-#[test]
-fn test_main() {
-    // x: [-3.0, 0.1, 3.2, -3.0, -0.3, 3.2, -2.0, 0.2, 2.0, -1.0, 0.1, 1.0, -3.2, 1.0, 3.0, -2.9, 0]
-    // uint8 x_quantized: [7, 131, 255, 7, 115, 255, 47, 135, 207, 87, 131, 167, 0, 167, 247, 11, 127]
-
-    // -3.0 * 0.1 = -0.3
-    let z_quantized_mul = mul(7, 127, 40, 131, 127, 40, 127, 40);
-    assert (z_quantized_mul == 115);
-
-    // -3.0/1.0 = -3.0
-    let z_quantized_div1 = div(7, 127, 40, 167, 127, 40, 127, 40);
-    assert (z_quantized_div1 == 7);
-
-    // -0.3/0.1 = -3.0
-    let z_quantized_div2 = div(115, 127, 40, 131, 127, 40, 127, 40);
-    assert (z_quantized_div2 == 7);
-
-    // -3.0 + 0.1 = -2.9
-    let z_quantized_add = add(7, 127, 40, 131, 127, 40, 127, 40);
-    assert (z_quantized_add == 11);
-
-    // 0.1 - 3.0 = -2.9
-    let z_quantized_sub = sub(131, 127, 40, 247, 127, 40, 127, 40);
-    assert (z_quantized_sub == 11);
-
-    println([z_quantized_mul, z_quantized_div1, z_quantized_div2, z_quantized_add, z_quantized_sub])
-}

@@ -1,48 +1,67 @@
 // Code generated from Python2Noir
-// Fixed number is 100
-
-fn obtainEuclideanDistance(inputs : [i64;6],point : [i64;6],) -> pub i64 {
-	let mut sum: i64 = 0;
+use dep::std::println;
+mod post_quantization_operation;
+global point_scale : Field = 255;
+global point_zero_point : Field = 0;
+global point0 : [Field;6] = [139, 64, 191, 0, 64, 0];
+global point1 : [Field;6] = [194, 76, 255, 255, 77, 255];
+global point2 : [Field;6] = [129, 85, 85, 255, 170, 0];
+global point3 : [Field;6] = [60, 0, 0, 255, 255, 255];
+fn obtainEuclideanDistance(inputs : [Field;6],inputs_scale : Field,inputs_zero_point : Field,point : [Field;6],) -> pub Field {
+	let mut sum: Field = 0;
 	for index in 0..5 {
-		sum += (point[index] - inputs[index]) * (point[index] - inputs[index]);
+		let x: Field = post_quantization_operation::sub(point[index], point_zero_point, point_scale, inputs[index], inputs_zero_point, inputs_scale, point_zero_point, point_scale);
+		let x_double: Field = post_quantization_operation::mul(x, point_zero_point, point_scale, x, point_zero_point, point_scale, point_zero_point, point_scale);
+		sum = post_quantization_operation::add(sum, point_zero_point, point_scale, x_double, point_zero_point, point_scale, point_zero_point, point_scale);
+	    println([x, point[index], inputs[index]]);
+	    println(x_double);
+	    println(sum);
+        println([sum * 255]);
+        println(">>>>>>>>>>>>>>>>>>>");
 	}
+	sum = sum * 255;
+	sum = post_quantization_operation::mul(sum, point_zero_point ,point_scale ,1 ,0 ,1 ,0 ,1);
+    println(sum);
+	println("--------------------");
 	sum
 }
-fn check_min(e0 : i64,e1 : i64,e2 : i64,e3 : i64,) -> pub u3 {
+fn check_min(e0 : Field,e1 : Field,e2 : Field,e3 : Field,) -> pub u3 {
 	let mut output: u3 = 0;
-	let mut temp: i64 = e0;
-	if e1 < temp {
+	let mut temp: Field = e0;
+	if e1 as u32 / 255 < temp as u32 / 255 {
 		temp = e1;
 		output = 1;
 	}
-	if e2 < temp {
+	if e2 as u32 / 255 < temp as u32 / 255 {
 		temp = e2;
 		output = 2;
 	}
-	if e3 < temp {
+	if e3 as u32 / 255 < temp as u32 / 255 {
 		temp = e3;
 		output = 3;
 	}
 	output
 }
-fn main(inputs : [i64;6],point0 : [i64;6],point1 : [i64;6],point2 : [i64;6],point3 : [i64;6],) -> pub u3 {
-	let e0: i64 = obtainEuclideanDistance(inputs, point0);
-	let e1: i64 = obtainEuclideanDistance(inputs, point1);
-	let e2: i64 = obtainEuclideanDistance(inputs, point2);
-	let e3: i64 = obtainEuclideanDistance(inputs, point3);
+fn main(inputs : [Field;6],inputs_scale : Field,inputs_zero_point : Field,) -> pub u3 {
+	let e0: Field = obtainEuclideanDistance(inputs, inputs_scale, inputs_zero_point, point0);
+	let e1: Field = obtainEuclideanDistance(inputs, inputs_scale, inputs_zero_point, point1);
+	let e2: Field = obtainEuclideanDistance(inputs, inputs_scale, inputs_zero_point, point2);
+	let e3: Field = obtainEuclideanDistance(inputs, inputs_scale, inputs_zero_point, point3);
+	println([e0, e1, e2, e3]);
 	check_min(e0,e1,e2,e3)
 }
 
 
-#[test]
-fn test_main() {
-    let inputs: [i64;6] = [3550, 0, 100, 0, 0, 0];
-    let p1: [i64;6] = [4056, 0, 60, 60, 0, 60];
-    let p2: [i64;6] = [3732, 0, 13, 100, 65, 56];
-    let p3: [i64;6] = [4062, 99, 100, 65, 99, 31];
-    let p4: [i64;6] = [3687, 0, 100, 0, 0, 0];
-    main(inputs, p1, p2, p3, p4);
 
+#[test]
+fn test_k_means() {
+    // let inputs:[Field;6] = [17, 0, 0, 255, 255, 255];
+    let inputs:[Field;6] = [0, 0, 255, 0, 0, 0];
+    let inputs_scale:Field = 255;
+    let inputs_zero_point:Field = 0;
+    let res = main(inputs, inputs_scale, inputs_zero_point);
+    println(res);
+    // assert(res==0);
     // Uncomment to make test fail
     // main(1, 1);
 }
