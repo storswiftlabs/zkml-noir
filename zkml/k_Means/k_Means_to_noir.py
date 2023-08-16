@@ -17,7 +17,7 @@ from transpiler.sub_module.sign import (
 )
 from transpiler.utils.utils import table_format_control
 
-from quantization.quantize import get_max, get_min, calc_scale, calc_zero_point, quantize_not_clip
+from ..quantization.quantize import get_max, get_min, calc_scale, calc_zero_point, quantize_not_clip
 
 
 def generate_k_means_noir_code(centers, scale, zero_point, display_type, noir_name: str = "main"):

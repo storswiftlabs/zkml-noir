@@ -5,11 +5,9 @@ import unittest
 import joblib
 import pandas as pd
 
-from XGBoost.xgboost_to_noir import xgboost_noir_code
-from transpiler.context.noir_context import NoirContext
+from zkml.XGBoost.xgboost_to_noir import xgboost_noir_code
 
-from quantization.quantize import calc_scale, calc_zero_point
-from utils.utils import quantize
+from zkml.quantization.quantize import calc_scale, calc_zero_point
 
 
 class test_xgboost(unittest.TestCase):
@@ -19,7 +17,7 @@ class test_xgboost(unittest.TestCase):
         path = 'data/Acute_Inflammations/preprocessing_data.tsv'
         titanic = pd.read_table(path, sep="\t", header=None)
         titanic = titanic.iloc[:, :-1]
-        print("normalization processing data info: ", titanic.values.tolist())
+        # print("normalization processing data info: ", titanic.values.tolist())
         x = [element for sublist in titanic.values.tolist() for element in sublist]
 
         scale_molecule, scale_denominator = calc_scale(x, q_type)

@@ -13,8 +13,8 @@ from transpiler.sub_module.sign import LEFT_PARENTHESIS, RIGHT_PARENTHESIS, GREA
 from transpiler.sub_module.primitive_type import UINT32
 from transpiler.utils.utils import table_format_control
 
-from decision_tree.decision_tree_to_noir import generate_body
-from quantization.quantize import quantize, calc_scale, calc_zero_point
+from ..decision_tree.decision_tree_to_noir import generate_body
+from ..quantization.quantize import quantize, calc_scale, calc_zero_point
 
 MODEL_NAME = 'XGBoost'
 

@@ -1,10 +1,7 @@
 import math
 import unittest
 
-import joblib
-
-from k_Means.k_Means_to_noir import generate_k_means_noir_code
-from quantization.quantize import get_max, get_min, calc_scale, calc_zero_point, quantize, dequantize, quantize_all
+from zkml.quantization.quantize import calc_scale, calc_zero_point, quantize, dequantize, quantize_all
 
 x = [-3.0, 0.1, 3.2, -3.0, -0.3, 3.2, -2.0, 0.2, 2.0, -1.0, 0.1, 1.0, -3.2, 1.0, 3.0]
 

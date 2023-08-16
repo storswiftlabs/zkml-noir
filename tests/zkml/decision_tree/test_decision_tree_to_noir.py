@@ -3,8 +3,8 @@ import unittest
 import joblib
 import pandas as pd
 
-from decision_tree.decision_tree_to_noir import generate_dt
-from quantization.quantize import quantize_all, UINT, quantize_not_clip, calc_scale, calc_zero_point, quantize
+from zkml.decision_tree.decision_tree_to_noir import generate_dt
+from zkml.quantization.quantize import UINT, quantize_not_clip, calc_scale, calc_zero_point, quantize
 
 
 class test_decision_tree_to_noir(unittest.TestCase):
