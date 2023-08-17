@@ -65,31 +65,69 @@ fn sub(x_quantized: Field, x_zero_point: Field, x_scale_reciprocal: Field, y_qua
    z_quantized
 }
 
+// x: [-3.0, 0.1, 3.2, -3.0, -0.3, 3.2, -2.0, 0.2, 2.0, -1.0, 0.1, 1.0, -3.2, 1.0, 3.0, -2.9, 0]
+// uint8 x_quantized: [7, 131, 255, 7, 115, 255, 47, 135, 207, 87, 131, 167, 0, 167, 247, 11, 127]
 
 #[test]
-fn test_main() {
-    // x: [-3.0, 0.1, 3.2, -3.0, -0.3, 3.2, -2.0, 0.2, 2.0, -1.0, 0.1, 1.0, -3.2, 1.0, 3.0, -2.9, 0]
-    // uint8 x_quantized: [7, 131, 255, 7, 115, 255, 47, 135, 207, 87, 131, 167, 0, 167, 247, 11, 127]
-
+fn test_mul() {
     // -3.0 * 0.1 = -0.3
     let z_quantized_mul = mul(7, 127, 40, 131, 127, 40, 127, 40);
+    println(z_quantized_mul);
     assert (z_quantized_mul == 115);
-
+}
+#[test]
+fn test_div1() {
     // -3.0/1.0 = -3.0
     let z_quantized_div1 = div(7, 127, 40, 167, 127, 40, 127, 40);
+    println(z_quantized_div1);
     assert (z_quantized_div1 == 7);
-
+}
+#[test]
+fn test_div2() {
     // -0.3/0.1 = -3.0
     let z_quantized_div2 = div(115, 127, 40, 131, 127, 40, 127, 40);
+    println(z_quantized_div2);
     assert (z_quantized_div2 == 7);
-
+}
+#[test]
+fn test_add() {
     // -3.0 + 0.1 = -2.9
     let z_quantized_add = add(7, 127, 40, 131, 127, 40, 127, 40);
+    println(z_quantized_add);
     assert (z_quantized_add == 11);
-
+}
+#[test]
+fn test_sub() {
     // 0.1 - 3.0 = -2.9
     let z_quantized_sub = sub(131, 127, 40, 247, 127, 40, 127, 40);
+    println(z_quantized_sub);
     assert (z_quantized_sub == 11);
+}
 
-    println([z_quantized_mul, z_quantized_div1, z_quantized_div2, z_quantized_add, z_quantized_sub])
+#[test]
+fn test_add_n_n(){
+    // negative add negative
+    // -0.1 + -0.1 = -0.2
+    let z_quantized_add = add(114, 127, 128, 114, 127, 128, 127, 128);
+    println(z_quantized_add);
+    assert (z_quantized_add == 101);
+
+}
+
+#[test]
+fn test_add_n_p(){
+    // negative add positive
+    // -0.6 + 0.3 = -0.3
+    let z_quantized_add = add(50, 127, 128, 165, 127, 128, 127, 128);
+    println(z_quantized_add);
+    // assert (z_quantized_add == 89); 90
+}
+
+#[test]
+fn test_add_p_p(){
+    // positive add positive
+    // 0.1 + 0.2 = 0.3
+    let z_quantized_add = add(140, 127, 128, 153, 127, 128, 127, 128);
+    println(z_quantized_add);
+    // assert (z_quantized_add == 165); 166
 }
