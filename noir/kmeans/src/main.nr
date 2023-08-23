@@ -13,16 +13,9 @@ fn obtainEuclideanDistance(inputs : [Field;6],inputs_scale : Field,inputs_zero_p
 		let x: Field = post_quantization_operation::sub(point[index], point_zero_point, point_scale, inputs[index], inputs_zero_point, inputs_scale, point_zero_point, point_scale);
 		let x_double: Field = post_quantization_operation::mul(x, point_zero_point, point_scale, x, point_zero_point, point_scale, point_zero_point, point_scale);
 		sum = post_quantization_operation::add(sum, point_zero_point, point_scale, x_double, point_zero_point, point_scale, point_zero_point, point_scale);
-	    println([x, point[index], inputs[index]]);
-	    println(x_double);
-	    println(sum);
-        println([sum * 255]);
-        println(">>>>>>>>>>>>>>>>>>>");
 	}
 	sum = sum * 255;
 	sum = post_quantization_operation::mul(sum, point_zero_point ,point_scale ,1 ,0 ,1 ,0 ,1);
-    println(sum);
-	println("--------------------");
 	sum
 }
 fn check_min(e0 : Field,e1 : Field,e2 : Field,e3 : Field,) -> pub u3 {
@@ -47,7 +40,6 @@ fn main(inputs : [Field;6],inputs_scale : Field,inputs_zero_point : Field,) -> p
 	let e1: Field = obtainEuclideanDistance(inputs, inputs_scale, inputs_zero_point, point1);
 	let e2: Field = obtainEuclideanDistance(inputs, inputs_scale, inputs_zero_point, point2);
 	let e3: Field = obtainEuclideanDistance(inputs, inputs_scale, inputs_zero_point, point3);
-	println([e0, e1, e2, e3]);
 	check_min(e0,e1,e2,e3)
 }
 

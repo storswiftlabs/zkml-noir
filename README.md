@@ -8,10 +8,13 @@ Python implement ML model transcoding Noir contracts
 
 ## Directory structure
 
-- tests: Testcase for transpiler
-- transpiler: Python2Noir transpiler, include Noir language diffent module
-  - context: Process the transformation context to build the complete Noir file
-  - core_module: Include some core components such as struct and function
-  - others_module: Include non-core statements
-  - sub_module: Include some base components such as primitive type sign and key words
-  - util: tools such as code format and logger 
+- data: ML model training and prediction data, including raw data and pre-processed data
+- model: Three types of ML models
+- noir: zkML generated Noir code
+- tests: Testcase for zkML transpiler code
+- zkml: The zkML code generation and floating point numbers quantize integer numbers
+  - decision_tree: Python2Noir generate Noir prediction code for the decision tree based on sk-learn library
+  - k_Means: Python2Noir generate Noir prediction code for the center points based on sk-learn library
+  - quantization: ML floating point numbers quantize integer numbers
+  - routine_code_generate: Routine generate Noir prediction code for the CNN and RNN based on Pytorch library
+  - XGBoost: Python2Noir generate Noir prediction code for the XGBoost classification and regression based on XGBoost library
