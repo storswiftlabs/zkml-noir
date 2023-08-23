@@ -20,7 +20,7 @@ stride = s
 # Set hyperparameters
 num_epochs = 5
 num_classes = 10
-batch_size = 100
+batch_size = 1
 learning_rate = 0.001
 
 # PyTorch will download MNIST data and save it to DATA_PATH
@@ -96,7 +96,7 @@ class ConvNet(nn.Module):
         # Fixed the side with -1 to have only one column
         out = out.reshape(out.size(0), -1)
         # Drop out some neural units with a certain probability to prevent overfitting
-        out = self.drop_out(out)
+        # out = self.drop_out(out)
         out = self.fc1(out)
         out = self.fc2(out)
         return out
@@ -161,10 +161,10 @@ with torch.no_grad():
     for images, labels in test_loader:
         outputs = model(images)
         _, predicted = torch.max(outputs.data, 1)
-        # print(outputs, predicted, labels)
+        print(outputs, predicted, labels)
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
-        # break
+        break
     print('Test Accuracy of the model on 10,000 test images: {} %'.format((correct / total) * 100))
 
 # Save the model
