@@ -36,7 +36,7 @@ Python implement ML model transcoding Noir contracts
 - pytorch
 - torchvision
 
-## Use
+## Usage
 ```shell
 git clone https://github.com/storswiftlabs/zkml-noir.git
 cd zkml-noir
