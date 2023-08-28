@@ -1,0 +1,7 @@
+[package]
+name = "matrix_calc"
+type = "bin"
+authors = [""]
+compiler_version = "0.10.0"
+
+[dependencies]
