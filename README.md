@@ -4,7 +4,7 @@
 
 ## Description
 
-Python implement ML model transcoding Noir contracts
+Python ML model transcoding Noir, including various algorithms such as Decision tree, K-Means, XGBoost, FNN, CNN
 
 ## Directory structure
 
